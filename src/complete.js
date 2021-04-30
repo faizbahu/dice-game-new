@@ -8,9 +8,10 @@ import dice5 from "./images/dice-5.png";
 import dice6 from "./images/dice-6.png";
 import { FaDownload } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
+import { BsFillPlusCircleFill } from "react-icons/bs";
 var images = [dice1, dice2, dice3, dice4, dice5, dice6];
-
 var toggle = true;
+
 class complete extends Component {
   constructor(props) {
     super(props);
@@ -21,24 +22,26 @@ class complete extends Component {
       hold2: 0,
       img: "",
       score: "",
+      wins: false,
     };
     this.random = this.random.bind(this);
     this.hold = this.hold.bind(this);
     this.score = this.score.bind(this);
+    this.newgame = this.newgame.bind(this);
+
     // this.img = this.img.bind(this);
   }
 
   hold() {
     if (toggle == true) {
       var y = this.state.random_number;
-
       this.setState({
         hold: this.state.hold + y,
         random_number: 0,
         img: "",
       });
       toggle = false;
-    } else {
+    } else if (toggle == false) {
       toggle = true;
       var y2 = this.state.random_number_2;
       this.setState({
@@ -78,34 +81,50 @@ class complete extends Component {
       }
     }
   }
-  score(event) {
 
+  score(event) {
     if (event.key == "Enter") {
       this.setState({
+        
         score: parseInt(event.target.value),
       });
-      if(event.target.value==''){
-        alert("pixel")
+      if (event.target.value == "") {
+        alert("pixel");
       }
     }
   }
+
   componentDidUpdate(prevProps, prevState) {
+    console.log(this.state.wins, "wins");
     if (this.state.hold > this.state.score) {
       console.log(this.state.score);
       this.setState({
         hold: "Player 1 wins",
+        wins: true,
       });
       console.log("greater1");
     } else if (this.state.hold2 >= this.state.score) {
       this.setState({
         hold2: "Player 2 wins",
+        wins: true,
       });
       console.log("greater");
     }
   }
+
+  newgame() {
+    this.setState({
+      hold: 0,
+      hold2: 0,
+      random_number: 0,
+      random_number_2: 0,
+      wins: false,
+    });
+  }
+
   render() {
     return (
-      <div>
+      <React.Fragment>
         <div className="container-fluid">
           <div className="text-center1">
             <p className="text-2xl">
@@ -118,9 +137,13 @@ class complete extends Component {
                 />
               </span>
             </p>
-            <div className="mt-3">
-              <i className="fas fa-plus-circle text-2xl"></i>
-              <span className="text-2xl">NEW GAME</span>
+            <div className="mt-3 flex">
+              {/* <i className="fas fa-plus-circle text-2xl"></i> */}
+              <span className="text-2xl">NEW GAME:</span>
+              <BsFillPlusCircleFill
+                onClick={this.newgame}
+                className="ml-6 mt-1 text-2xl cursor-pointer"
+              />
             </div>
           </div>
           <div className="flex justify-around text-center">
@@ -143,13 +166,19 @@ class complete extends Component {
                   id="one-one"
                   className="none px-2 py-1"
                   onClick={this.random}
+                  disabled={this.state.wins}
                 >
                   <FiRefreshCw className="text-xl" />
                 </button>
                 <p className="text-xl font-medium">ROLL DICE</p>
               </div>
               <div className="flex mt-3">
-                <button id="one-one" onClick={this.hold} className="px-2 py-1">
+                <button
+                  id="one-one"
+                  onClick={this.hold}
+                  disabled={this.state.wins}
+                  className="px-2 py-1"
+                >
                   {/* <i className="fas fa-download mr-3 text-xl"></i> */}
                   <FaDownload className="text-xl" />
                 </button>
@@ -174,7 +203,7 @@ class complete extends Component {
             </div>
           </div>
         </div>
-      </div>
+      </React.Fragment>
     );
   }
 }
